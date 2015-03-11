@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package>
+  <name>mobility_base_simulator</name>
+  <version>0.0.1</version>
+  <description>
+    Metapackage allowing easy installation of Mobility Base simulation components.
+  </description>
+
+  <license>BSD</license>
+  <author>Dataspeed Inc.</author>
+  <maintainer email="khallenbeck@dataspeedinc.com">Dataspeed Inc.</maintainer>
+  <url type="website">http://dataspeedinc.com</url>
+  <url type="repository">https://bitbucket.org/dataspeedinc/mobility_base_simulator</url>
+  <url type="bugtracker">https://bitbucket.org/dataspeedinc/mobility_base_simulator/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>mobility_base_gazebo</run_depend>
+  <run_depend>mobility_base_gazebo_plugins</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+
+</package>

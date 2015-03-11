@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(mobility_base_gazebo_plugins)
+
+find_package(catkin REQUIRED COMPONENTS
+  tf
+  gazebo_ros
+  gazebo_plugins
+  mobility_base_core_msgs
+  roscpp
+  std_msgs
+)
+find_package(gazebo)
+
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS gazebo_ros gazebo_plugins mobility_base_core_msgs roscpp std_msgs
+  DEPENDS gazebo
+)
+
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+  ${GAZEBO_INCLUDE_DIRS}
+)
+
+add_library(${PROJECT_NAME} src/MobilityBasePlugin.cpp)
+add_dependencies(${PROJECT_NAME} mobility_base_msgs_generate_messages_cpp)
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
+)
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)

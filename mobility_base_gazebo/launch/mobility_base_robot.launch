@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="x" default="0" />
+  <arg name="y" default="0" />
+  <arg name="z" default="0" />
+  <arg name="R" default="0" />
+  <arg name="P" default="0" />
+  <arg name="Y" default="0" />
+  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' sim:=true" />
+
+  <group ns="/mobility_base">
+
+    <!-- Gazebo model spawner -->
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y) -unpause -urdf -param /mobility_base/robot_description -model mobility_base"/>
+
+    <!-- Transforms -->
+    <param name="robot_description" command="$(find xacro)/xacro.py $(arg xacro_file)" />
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="30.0" />
+    </node>
+
+  </group>
+
+</launch>
