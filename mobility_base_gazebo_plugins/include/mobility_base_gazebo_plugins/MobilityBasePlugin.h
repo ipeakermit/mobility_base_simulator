@@ -184,6 +184,7 @@ private:
   // Parameters
   bool ideal_;
   std::string parent_frame_id_;
+  std::string child_frame_id_;
 
 
   void omniFromCartesian(double vx, double vy, double wz, double w[4]) const;

@@ -138,6 +138,11 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   }
   if (sdf->HasElement("parent_frame_id")) {
     parent_frame_id_ = sdf->GetElement("parent_frame_id")->Get<std::string>();
+    if (sdf->HasElement("child_frame_id")) {
+      child_frame_id_ = sdf->GetElement("child_frame_id")->Get<std::string>();
+    } else {
+      child_frame_id_ = frame_id_;
+    }
     tf_broadcaster_ = new tf::TransformBroadcaster();
   }
 
@@ -355,7 +360,7 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
         geometry_msgs::TransformStamped transform;
         transform.header.stamp = rstamp;
         transform.header.frame_id = parent_frame_id_;
-        transform.child_frame_id = frame_id_;
+        transform.child_frame_id = child_frame_id_;
         transform.transform.translation.x = position.x;
         transform.transform.translation.y = position.y;
         transform.transform.translation.z = position.z;
