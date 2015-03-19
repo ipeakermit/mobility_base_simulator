@@ -21,4 +21,9 @@
 
   </group>
 
+  <!-- Laser filter to remove legs from scan -->
+  <include file="$(find mobility_base_bringup)/launch/birdcage_laser_pipeline.launch" >
+    <arg name="ns" value="/laser_birdcage_r2000"/>
+  </include>
+
 </launch>
