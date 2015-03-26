@@ -6,7 +6,14 @@
   <arg name="R" default="0" />
   <arg name="P" default="0" />
   <arg name="Y" default="0" />
-  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' sim:=true" />
+  <arg name="baxter" default="false" />
+  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' sim:=true baxter:=$(arg baxter)" />
+
+  <group if="$(arg baxter)" >
+    <param name="/robot_description" command="$(find xacro)/xacro.py $(arg xacro_file)" />
+    <param name="rethink/software_version" value="1.1.0" />
+    <include file="$(find baxter_sim_hardware)/launch/baxter_sdk_control.launch" />
+  </group>
 
   <group ns="/mobility_base">
 
