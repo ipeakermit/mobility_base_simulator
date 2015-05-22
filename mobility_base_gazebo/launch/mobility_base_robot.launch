@@ -11,7 +11,7 @@
 
   <group if="$(arg baxter)" >
     <param name="/robot_description" command="$(find xacro)/xacro.py $(arg xacro_file)" />
-    <param name="rethink/software_version" value="1.1.0" />
+    <param name="rethink/software_version" value="1.1.1" />
     <include file="$(find baxter_sim_hardware)/launch/baxter_sdk_control.launch" />
   </group>
 
