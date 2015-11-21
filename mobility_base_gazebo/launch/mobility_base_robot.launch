@@ -35,4 +35,11 @@
     </include>
   </group>
 
+  <!-- PointCloud filter to remove legs from scan -->
+  <group if="$(optenv MB_LASER_BIRDCAGE_VLP16 0)" ns="laser_birdcage_vlp16">
+    <node pkg="mobility_base_pointcloud_filter" type="pointcloud_filter_node" name="filter">
+      <param name="width" value="0.439822972"/>
+    </node>
+  </group>
+
 </launch>
