@@ -63,6 +63,15 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
 
+#ifdef _CONST
+#undef _CONST
+#endif
+#if __cplusplus >= 201103L
+#define _CONST constexpr
+#else
+#define _CONST const
+#endif
+
 namespace gazebo
 {
 class MobilityBasePlugin : public ModelPlugin
@@ -71,27 +80,27 @@ public:
   MobilityBasePlugin();
   ~MobilityBasePlugin();
 
-  static const unsigned int NUM_WHEELS = 4;
-  static const unsigned int NUM_ROLLERS = 12;
-  static const double WHEEL_RADIUS = 8.0 / 2 * 0.0254;
-  static const double WHEEL_BASE_WIDTH = 0.680466;
-  static const double WHEEL_BASE_LENGTH = 0.505466;
-  static const double RADIANS_PER_SECOND_MAX = 14000 * (2.0 * M_PI / (200 * 48.5 / 2));
-  static const double CMD_TIMEOUT = 0.2;
-  static const double ACCEL_LIMIT_FAST_VXY = 4.0;
-  static const double ACCEL_LIMIT_FAST_WZ = 3.0 * M_PI;
-  static const double ACCEL_LIMIT_SLOW_VXY = 1.0;
-  static const double ACCEL_LIMIT_SLOW_WZ = 1.0 * M_PI;
-  static const double ACCEL_INSTANT_VXY = 0.5;
-  static const double ACCEL_INSTANT_WZ = 0.5 * M_PI;
-  static const double TORQUE_MAX_GLOBAL = 50.0;
-  static const double TORQUE_MAX_ALARM = 5.0;
+  static _CONST unsigned int NUM_WHEELS = 4;
+  static _CONST unsigned int NUM_ROLLERS = 12;
+  static _CONST double WHEEL_RADIUS = 8.0 / 2 * 0.0254;
+  static _CONST double WHEEL_BASE_WIDTH = 0.680466;
+  static _CONST double WHEEL_BASE_LENGTH = 0.505466;
+  static _CONST double RADIANS_PER_SECOND_MAX = 14000 * (2.0 * M_PI / (200 * 48.5 / 2));
+  static _CONST double CMD_TIMEOUT = 0.2;
+  static _CONST double ACCEL_LIMIT_FAST_VXY = 4.0;
+  static _CONST double ACCEL_LIMIT_FAST_WZ = 3.0 * M_PI;
+  static _CONST double ACCEL_LIMIT_SLOW_VXY = 1.0;
+  static _CONST double ACCEL_LIMIT_SLOW_WZ = 1.0 * M_PI;
+  static _CONST double ACCEL_INSTANT_VXY = 0.5;
+  static _CONST double ACCEL_INSTANT_WZ = 0.5 * M_PI;
+  static _CONST double TORQUE_MAX_GLOBAL = 50.0;
+  static _CONST double TORQUE_MAX_ALARM = 5.0;
 
-  static const double PUB_FREQ_VEHICLE = 250.0;
-  static const double PUB_FREQ_IMU = 100.0;
-  static const double PUB_FREQ_JOYSTICK = 50.0;
-  static const double PUB_FREQ_BUMPERS = 10.0;
-  static const double PUB_FREQ_MODE = 2.0;
+  static _CONST double PUB_FREQ_VEHICLE = 250.0;
+  static _CONST double PUB_FREQ_IMU = 100.0;
+  static _CONST double PUB_FREQ_JOYSTICK = 50.0;
+  static _CONST double PUB_FREQ_BUMPERS = 10.0;
+  static _CONST double PUB_FREQ_MODE = 2.0;
 
   void Load(physics::ModelPtr _parent, sdf::ElementPtr sdf);
 
@@ -225,5 +234,7 @@ private:
 
 };
 } //namespace gazebo
+
+#undef _CONST
 
 #endif /* MOBILITY_BASE_PLUGIN_H_ */
