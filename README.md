@@ -1,3 +1,6 @@
+# mobility_base_simulator
+![screenshot](img/gazebo_and_rviz.png)
+
 # Code & Tickets
 | | |
 |-|-|
