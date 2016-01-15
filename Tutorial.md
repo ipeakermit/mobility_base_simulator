@@ -37,6 +37,7 @@ roslaunch mobility_base_gazebo mobility_base_empty_world.launch baxter:=true
 
 # Things to try in a new tab
 Remember to source the workspace for each new tab ```source devel/setup.bash```
+
 * Enable Baxter
     * ```rosrun baxter_tools enable_robot.py -e```
     * ```rosrun baxter_tools tuck_arms.py -u```
