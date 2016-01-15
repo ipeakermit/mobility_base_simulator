@@ -41,7 +41,7 @@ roslaunch mobility_base_gazebo mobility_base_empty_world.launch baxter:=true
     * ```rosrun baxter_tools tuck_arms.py -u```
 * Visualize sensors in rviz
     * ```roslaunch mobility_base_tools rviz.launch```
-* Basic motion commands: https://www.youtube.com/watch?v=oF-VAFTKkto
+* Basic motion commands: [Video](https://www.youtube.com/watch?v=oF-VAFTKkto)
     * ```rosrun mobility_base_examples motion_demo.py```
 * Include LIDAR sensors in the simulation
-    * Set desired environment variables documented at http://mbsdk.dataspeedinc.com/Config
+    * Set desired environment variables documented [here](http://mbsdk.dataspeedinc.com/Config).
