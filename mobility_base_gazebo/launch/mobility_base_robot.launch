@@ -7,12 +7,17 @@
   <arg name="P" default="0" />
   <arg name="Y" default="0" />
   <arg name="baxter" default="false" />
-  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' sim:=true baxter:=$(arg baxter)" />
+  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' gazebo:=true baxter:=$(arg baxter)" />
 
+  <arg name="left_electric_gripper" default="true"/>
+  <arg name="right_electric_gripper" default="true"/>
   <group if="$(arg baxter)" >
-    <param name="/robot_description" command="$(find xacro)/xacro --inorder $(arg xacro_file)" />
-    <param name="rethink/software_version" value="1.1.1" />
-    <include file="$(find baxter_sim_hardware)/launch/baxter_sdk_control.launch" />
+    <param name="/robot_description" command="$(find xacro)/xacro --inorder '$(find mobility_base_description)/urdf/baxter.urdf.xacro' gazebo:=true pedestal:=false" />
+    <param name="rethink/software_version" value="1.2.0" />
+    <include file="$(find baxter_sim_hardware)/launch/baxter_sdk_control.launch">
+        <arg name="right_electric_gripper" value="$(arg right_electric_gripper)"/>
+        <arg name="left_electric_gripper" value="$(arg left_electric_gripper)"/>
+    </include>
   </group>
 
   <group ns="/mobility_base">

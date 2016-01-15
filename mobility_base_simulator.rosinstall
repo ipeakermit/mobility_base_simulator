@@ -1,0 +1,4 @@
+- git:
+    local-name: mobility_base_simulator
+    uri: https://bitbucket.org/DataspeedInc/mobility_base_simulator.git
+    version: master
