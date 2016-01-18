@@ -1,5 +1,5 @@
 # Overview
-This tutorial will walk you through setting up a gazebo simulation of the Dataspeed Inc. Mobility Base and Rethink Robotics Baxtor.
+This tutorial will walk you through setting up a gazebo simulation of the Dataspeed Inc. Mobility Base and Rethink Robotics Baxter.
 
 # Workspace setup
 Note: The following coommands must be run from the root of a catkin workspace, or an empty folder you wish to become a cakin workspace.
