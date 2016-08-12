@@ -1,4 +1,4 @@
-- git:
+- hg:
     local-name: mobility_base_simulator
-    uri: https://bitbucket.org/DataspeedInc/mobility_base_simulator.git
-    version: master
+    uri: https://bitbucket.org/DataspeedInc/mobility_base_simulator
+    version: default
