@@ -19,5 +19,6 @@
   <run_depend>gazebo_ros</run_depend>
   <run_depend>mobility_base_description</run_depend>
   <run_depend>mobility_base_gazebo_plugins</run_depend>
+  <run_depend>velodyne_gazebo_plugins</run_depend>
 
 </package>
