@@ -38,7 +38,7 @@ namespace gazebo
 {
 
 MobilityBasePlugin::MobilityBasePlugin() :
-    nh_(NULL), spinner_thread_(NULL), tf_broadcaster_(NULL), first_update_(true), ideal_(false)
+    nh_(NULL), spinner_thread_(NULL), tf_broadcaster_(NULL), first_update_(true), fast_(true)
 {
   omni_a_ = 1.0 / WHEEL_RADIUS;
   omni_b_ = 1.0 / WHEEL_RADIUS;
@@ -136,8 +136,9 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   }
 
   // Get parameters
-  if (sdf->HasElement("ideal")) {
-    ideal_ = sdf->GetElement("ideal")->Get<int>() ? true : false;
+  if (sdf->HasElement("fast")) {
+    std::string comp = "true";
+    fast_ = comp.compare(sdf->GetElement("fast")->Get<std::string>()) ? false : true;
   }
   if (sdf->HasElement("parent_frame_id")) {
     parent_frame_id_ = sdf->GetElement("parent_frame_id")->Get<std::string>();
@@ -212,21 +213,13 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
   math::Vector3 angular_pos;
   math::Quaternion orientation;
   math::Vector3 position;
-  if (ideal_) {
-    linear_vel = model_linear_vel_;
-    angular_vel = model_angular_vel_;
-    linear_accel = model_->GetRelativeLinearAccel();
-    angular_pos = model_pose_.rot.GetAsEuler();
-    orientation = model_pose_.rot;
-    position = model_pose_.pos;
-  } else {
-    linear_vel = model_->GetRelativeLinearVel();
-    angular_vel = model_->GetRelativeAngularVel();
-    linear_accel = model_->GetRelativeLinearAccel();
-    angular_pos = model_->GetWorldPose().rot.GetAsEuler();
-    orientation = model_->GetWorldPose().rot;
-    position = model_->GetWorldPose().pos;
-  }
+
+  linear_vel = model_->GetRelativeLinearVel();
+  angular_vel = model_->GetRelativeAngularVel();
+  linear_accel = model_->GetRelativeLinearAccel();
+  angular_pos = model_->GetWorldPose().rot.GetAsEuler();
+  orientation = model_->GetWorldPose().rot;
+  position = model_->GetWorldPose().pos;
 
   const math::Vector3 fb_vel(linear_vel.x, linear_vel.y, angular_vel.z);
 
@@ -238,11 +231,7 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
     stamp_bumpers_ = gstamp;
     stamp_mode_ = gstamp;
     cmd_vel_history_ = math::Vector3::Zero;
-    if (ideal_) {
-      model_pose_ = model_->GetWorldPose();
-      model_linear_vel_ = math::Vector3::Zero;
-      model_angular_vel_ = math::Vector3::Zero;
-    }
+
   } else {
     // Select command source
     math::Vector3 cmd = math::Vector3::Zero;
@@ -305,26 +294,18 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
       cmd_vel_history_ = temp;
     }
 
-    // Apply force and torque to base_link to control mobility_base
-    math::Vector3 linear_vel_orig = link_base_footprint_->GetRelativeLinearVel();
-    math::Vector3 angular_vel_orig = link_base_footprint_->GetRelativeAngularVel();
-    link_base_footprint_->SetLinearVel(math::Vector3(GAIN_X * temp.x, GAIN_Y * temp.y, linear_vel_orig.z));
-    link_base_footprint_->SetAngularVel(math::Vector3(angular_vel_orig.x, angular_vel_orig.y, GAIN_Z * temp.z));
+    if (fast_) {
+      // Apply force and torque to base_footprint to control mobility_base
+      math::Vector3 linear_vel_orig = link_base_footprint_->GetRelativeLinearVel();
+      math::Vector3 angular_vel_orig = link_base_footprint_->GetRelativeAngularVel();
+      link_base_footprint_->SetLinearVel(math::Vector3(GAIN_X * temp.x, GAIN_Y * temp.y, linear_vel_orig.z));
+      link_base_footprint_->SetAngularVel(math::Vector3(angular_vel_orig.x, angular_vel_orig.y, GAIN_Z * temp.z));
+    }
 
     // Command the wheel motors
     for (unsigned int i = 0; i < NUM_WHEELS; i++) {
       joint_wheels_[i]->SetVelocity(0, speed[i]);
       joint_wheels_[i]->SetMaxForce(0, TORQUE_MAX_GLOBAL);
-    }
-    if (ideal_) {
-      //model_->SetStatic(true);
-      model_linear_vel_ = math::Vector3(temp.x, temp.y, 0.0);
-      model_angular_vel_ = math::Vector3(0.0, 0.0, temp.z);
-      model_pose_.pos += ts * model_pose_.rot.RotateVector(model_linear_vel_);
-      model_pose_.rot = math::Quaternion::EulerToQuaternion(0, 0, (model_pose_.rot.GetAsEuler().z + ts * temp.z));
-
-      model_->SetWorldPose(model_pose_, true, true);
-      model_->SetWorldTwist(model_linear_vel_, model_angular_vel_, true);
     }
 
     // Publish vehicle feedback

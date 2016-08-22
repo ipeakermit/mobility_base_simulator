@@ -126,12 +126,9 @@ private:
   physics::WorldPtr world_;
   physics::JointPtr joint_wheels_[NUM_WHEELS];
   physics::JointPtr joint_rollers_[NUM_WHEELS][NUM_ROLLERS];
+  physics::LinkPtr link_base_footprint_;
   common::Time previous_stamp_;
   bool first_update_;
-  math::Pose model_pose_;
-  math::Vector3 model_linear_vel_;
-  math::Vector3 model_angular_vel_;
-  physics::LinkPtr link_base_footprint_;
 
   // Command source cmd_vel
   math::Vector3 cmd_vel_;
@@ -196,7 +193,7 @@ private:
   const char *frame_id_;
 
   // Parameters
-  bool ideal_;
+  bool fast_;
   std::string parent_frame_id_;
   std::string child_frame_id_;
 
