@@ -93,6 +93,9 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   std::string model_name = sdf->GetParent()->Get<std::string>("name");
   gzdbg << "MobilityBasePlugin loaded for model '" << model_name << "'\n";
 
+  // Get the pointer to the base_link
+  link_base_footprint_ = model_->GetLink("base_footprint");
+
   joint_state_wheels_.name.push_back("wheel_fl");
   joint_state_wheels_.name.push_back("wheel_fr");
   joint_state_wheels_.name.push_back("wheel_rl");
@@ -301,6 +304,12 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
     } else {
       cmd_vel_history_ = temp;
     }
+
+    // Apply force and torque to base_link to control mobility_base
+    math::Vector3 linear_vel_orig = link_base_footprint_->GetRelativeLinearVel();
+    math::Vector3 angular_vel_orig = link_base_footprint_->GetRelativeAngularVel();
+    link_base_footprint_->SetLinearVel(math::Vector3(GAIN_X * temp.x, GAIN_Y * temp.y, linear_vel_orig.z));
+    link_base_footprint_->SetAngularVel(math::Vector3(angular_vel_orig.x, angular_vel_orig.y, GAIN_Z * temp.z));
 
     // Command the wheel motors
     for (unsigned int i = 0; i < NUM_WHEELS; i++) {

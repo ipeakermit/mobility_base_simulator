@@ -102,6 +102,10 @@ public:
   static _CONST double PUB_FREQ_BUMPERS = 10.0;
   static _CONST double PUB_FREQ_MODE = 2.0;
 
+  static _CONST double GAIN_X = 1.0;
+  static _CONST double GAIN_Y = 1.0;
+  static _CONST double GAIN_Z = 1.0;
+
   void Load(physics::ModelPtr _parent, sdf::ElementPtr sdf);
 
 protected:
@@ -127,6 +131,7 @@ private:
   math::Pose model_pose_;
   math::Vector3 model_linear_vel_;
   math::Vector3 model_angular_vel_;
+  physics::LinkPtr link_base_footprint_;
 
   // Command source cmd_vel
   math::Vector3 cmd_vel_;
