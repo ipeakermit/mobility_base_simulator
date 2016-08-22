@@ -93,6 +93,21 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   std::string model_name = sdf->GetParent()->Get<std::string>("name");
   gzdbg << "MobilityBasePlugin loaded for model '" << model_name << "'\n";
 
+  // Get parameters
+  if (sdf->HasElement("fast")) {
+    std::string comp = "true";
+    fast_ = comp.compare(sdf->GetElement("fast")->Get<std::string>()) ? false : true;
+  }
+  if (sdf->HasElement("parent_frame_id")) {
+    parent_frame_id_ = sdf->GetElement("parent_frame_id")->Get<std::string>();
+    if (sdf->HasElement("child_frame_id")) {
+      child_frame_id_ = sdf->GetElement("child_frame_id")->Get<std::string>();
+    } else {
+      child_frame_id_ = frame_id_;
+    }
+    tf_broadcaster_ = new tf::TransformBroadcaster();
+  }
+
   // Get the pointer to the base_link
   link_base_footprint_ = model_->GetLink("base_footprint");
 
@@ -115,39 +130,25 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
       gzerr << "Failed to find joint '" << wheel << "' in the model\n";
       return;
     }
-
+    if (!fast_) {
     // Roller joints
-    for (unsigned int j = 0; j < NUM_ROLLERS; j++) {
-      std::stringstream ss;
-      ss << wheel << "_roller_" << j;
-      std::string roller = ss.str();
-      joint_rollers_[i][j] = parent->GetJoint(roller);
-      if (joint_rollers_[i][j]) {
-        joint_rollers_[i][j]->SetDamping(0, 0.0005);
-        joint_state_rollers_.name.push_back(roller);
-        joint_state_rollers_.position.push_back(0);
-        joint_state_rollers_.velocity.push_back(0);
-        joint_state_rollers_.effort.push_back(0);
-      } else {
-        gzerr << "Failed to find joint '" << roller << "' in the model\n";
-        return;
+      for (unsigned int j = 0; j < NUM_ROLLERS; j++) {
+        std::stringstream ss;
+        ss << wheel << "_roller_" << j;
+        std::string roller = ss.str();
+        joint_rollers_[i][j] = parent->GetJoint(roller);
+        if (joint_rollers_[i][j]) {
+          joint_rollers_[i][j]->SetDamping(0, 0.0005);
+          joint_state_rollers_.name.push_back(roller);
+          joint_state_rollers_.position.push_back(0);
+          joint_state_rollers_.velocity.push_back(0);
+          joint_state_rollers_.effort.push_back(0);
+        } else {
+          gzerr << "Failed to find joint '" << roller << "' in the model\n";
+          return;
+        }
       }
     }
-  }
-
-  // Get parameters
-  if (sdf->HasElement("fast")) {
-    std::string comp = "true";
-    fast_ = comp.compare(sdf->GetElement("fast")->Get<std::string>()) ? false : true;
-  }
-  if (sdf->HasElement("parent_frame_id")) {
-    parent_frame_id_ = sdf->GetElement("parent_frame_id")->Get<std::string>();
-    if (sdf->HasElement("child_frame_id")) {
-      child_frame_id_ = sdf->GetElement("child_frame_id")->Get<std::string>();
-    } else {
-      child_frame_id_ = frame_id_;
-    }
-    tf_broadcaster_ = new tf::TransformBroadcaster();
   }
 
   // Initialize the ROS node
@@ -333,17 +334,22 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
 
       // Publish joint_states
       joint_state_wheels_.header = header;
-      joint_state_rollers_.header = header;
+      if (!fast_)
+        joint_state_rollers_.header = header;
       for (unsigned int i = 0; i < NUM_WHEELS; i++) {
         joint_state_wheels_.position[i] = joint_wheels_[i]->GetAngle(0).Radian();
         joint_state_wheels_.velocity[i] = joint_wheels_[i]->GetVelocity(0);
-        for (unsigned int j = 0; j < NUM_ROLLERS; j++) {
-          joint_state_rollers_.position[i * NUM_ROLLERS + j] = joint_rollers_[i][j]->GetAngle(0).Radian();
-          joint_state_rollers_.velocity[i * NUM_ROLLERS + j] = joint_rollers_[i][j]->GetVelocity(0);
+
+        if (!fast_) {
+          for (unsigned int j = 0; j < NUM_ROLLERS; j++) {
+            joint_state_rollers_.position[i * NUM_ROLLERS + j] = joint_rollers_[i][j]->GetAngle(0).Radian();
+            joint_state_rollers_.velocity[i * NUM_ROLLERS + j] = joint_rollers_[i][j]->GetVelocity(0);
+          }
         }
       }
       pmq_joint_states_->push(joint_state_wheels_, pub_joint_states_);
-      pmq_joint_states_->push(joint_state_rollers_, pub_joint_states_);
+      if (!fast_)
+        pmq_joint_states_->push(joint_state_rollers_, pub_joint_states_);
 
       // Optionally publish tf transform
       if (tf_broadcaster_) {
