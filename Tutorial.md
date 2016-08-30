@@ -12,7 +12,7 @@ wstool init src
 Download required source code
 ```bash
 wget https://bitbucket.org/DataspeedInc/mobility_base_sdk/raw/master/mobility_base_sdk.rosinstall -O /tmp/mobility_base_sdk.rosinstall
-wget https://bitbucket.org/DataspeedInc/mobility_base_simulator/raw/master/mobility_base_simulator.rosinstall -O /tmp/mobility_base_simulator.rosinstall
+wget https://bitbucket.org/DataspeedInc/mobility_base_simulator/raw/default/mobility_base_simulator.rosinstall -O /tmp/mobility_base_simulator.rosinstall
 wstool merge -t src /tmp/mobility_base_sdk.rosinstall
 wstool merge -t src /tmp/mobility_base_simulator.rosinstall
 wstool update -t src

@@ -15,7 +15,8 @@
   <arg name="P" default="0" />
   <arg name="Y" default="0" />
   <arg name="baxter" default="false" />
-  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' gazebo:=true baxter:=$(arg baxter)" />
+  <arg name="fast" default="true" />
+  <arg name="xacro_file" default="'$(find mobility_base_description)/urdf/mobility_base.urdf.xacro' gazebo:=true baxter:=$(arg baxter) fast:=$(arg fast)" />
 
   <!-- Start gazebo and load the world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch" >
