@@ -306,7 +306,11 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
     // Command the wheel motors
     for (unsigned int i = 0; i < NUM_WHEELS; i++) {
       joint_wheels_[i]->SetVelocity(0, speed[i]);
+#if GAZEBO_MAJOR_VERSION >= 7
+      joint_wheels_[i]->SetEffortLimit(0, TORQUE_MAX_GLOBAL);
+#else
       joint_wheels_[i]->SetMaxForce(0, TORQUE_MAX_GLOBAL);
+#endif
     }
 
     // Publish vehicle feedback
