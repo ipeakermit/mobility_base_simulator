@@ -297,9 +297,10 @@ void MobilityBasePlugin::UpdateChild(const common::UpdateInfo & _info)
 
     if (fast_) {
       // Apply force and torque to base_footprint to control mobility_base
+      math::Vector3 linear_vel = orientation.RotateVector(math::Vector3(temp.x, temp.y, 0.0));
       math::Vector3 linear_vel_orig = link_base_footprint_->GetRelativeLinearVel();
       math::Vector3 angular_vel_orig = link_base_footprint_->GetRelativeAngularVel();
-      link_base_footprint_->SetLinearVel(math::Vector3(GAIN_X * temp.x, GAIN_Y * temp.y, linear_vel_orig.z));
+      link_base_footprint_->SetLinearVel(math::Vector3(GAIN_X * linear_vel.x, GAIN_Y * linear_vel.y, linear_vel_orig.z + linear_vel.z));
       link_base_footprint_->SetAngularVel(math::Vector3(angular_vel_orig.x, angular_vel_orig.y, GAIN_Z * temp.z));
     }
 
