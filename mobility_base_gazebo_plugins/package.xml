@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>mobility_base_gazebo_plugins</name>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <description>
     Gazebo plugin to provide simulated dynamics of the
     Mobility Base Robot from Dataspeed Inc.
