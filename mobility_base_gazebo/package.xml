@@ -15,11 +15,15 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roslaunch</build_depend>
-
+  <!-- Launch Depends -->
+  <exec_depend>roslaunch</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>mobility_base_bringup</exec_depend>
   <exec_depend>mobility_base_gazebo_plugins</exec_depend>
   <exec_depend>velodyne_gazebo_plugins</exec_depend>
+
+  <!-- Test Depends -->
+  <test_depend>roslaunch</test_depend>
 
 </package>
