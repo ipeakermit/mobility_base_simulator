@@ -11,8 +11,8 @@ wstool init src
 
 Download required source code
 ```bash
-wget https://bitbucket.org/DataspeedInc/mobility_base_ros/raw/default/mobility_base.rosinstall -O /tmp/mobility_base.rosinstall
-wget https://bitbucket.org/DataspeedInc/mobility_base_simulator/raw/default/mobility_base_simulator.rosinstall -O /tmp/mobility_base_simulator.rosinstall
+wget https://bitbucket.org/DataspeedInc/mobility_base_ros/raw/master/mobility_base.rosinstall -O /tmp/mobility_base.rosinstall
+wget https://bitbucket.org/DataspeedInc/mobility_base_simulator/raw/master/mobility_base_simulator.rosinstall -O /tmp/mobility_base_simulator.rosinstall
 wstool merge -t src /tmp/mobility_base.rosinstall
 wstool merge -t src /tmp/mobility_base_simulator.rosinstall
 wstool update -t src
@@ -20,7 +20,7 @@ wstool update -t src
 
 Install dependencies
 ```bash
-sudo apt-get install ros-indigo-baxter-simulator ros-indigo-joint-state-controller
+sudo apt-get install ros-$ROS_DISTRO-baxter-simulator ros-$ROS_DISTRO-joint-state-controller
 rosdep update && rosdep install --from-paths src --ignore-src -r
 ```
 Build
