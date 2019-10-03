@@ -14,6 +14,7 @@ CTestTestfile.cmake
 Makefile
 .cproject
 .project
+.cquery_cache
 
 # Temporary files
 *~

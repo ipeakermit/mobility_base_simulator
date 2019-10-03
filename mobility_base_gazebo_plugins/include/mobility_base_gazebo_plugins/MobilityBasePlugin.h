@@ -131,12 +131,12 @@ private:
   bool first_update_;
 
   // Command source cmd_vel
-  math::Vector3 cmd_vel_;
+  ignition::math::Vector3<double> cmd_vel_;
   common::Time cmd_vel_stamp_;
   boost::mutex cmd_vel_mutex_;
 
   // Command source cmd_vel_raw
-  math::Vector3 cmd_vel_raw_;
+  ignition::math::Vector3<double> cmd_vel_raw_;
   common::Time cmd_vel_raw_stamp_;
   boost::mutex cmd_vel_raw_mutex_;
 
@@ -146,7 +146,7 @@ private:
   common::Time stamp_joystick_;
   common::Time stamp_bumpers_;
   common::Time stamp_mode_;
-  math::Vector3 cmd_vel_history_;
+  ignition::math::Vector3<double> cmd_vel_history_;
   mobility_base_core_msgs::Mode::_mode_type mode_;
 
   // ROS
