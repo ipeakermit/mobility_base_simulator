@@ -115,7 +115,7 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
     const std::string &wheel = joint_state_wheels_.name[i];
     joint_wheels_[i] = parent->GetJoint(wheel);
     if (joint_wheels_[i]) {
-      joint_wheels_[i]->SetDamping(0, 0.1);
+      joint_wheels_[i]->SetDamping(0, 1.0);
       joint_state_wheels_.position.push_back(0);
       joint_state_wheels_.velocity.push_back(0);
       joint_state_wheels_.effort.push_back(0);
@@ -134,7 +134,7 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
         joint_rollers_[i][j] = parent->GetJoint(roller);
         if (joint_rollers_[i][j]) {
           ROS_INFO("Roller joint: %s found", roller.c_str());
-          joint_rollers_[i][j]->SetDamping(0, 0.005);
+          joint_rollers_[i][j]->SetDamping(0, 0.006);
           joint_state_rollers_.name.push_back(roller);
           joint_state_rollers_.position.push_back(0);
           joint_state_rollers_.velocity.push_back(0);
