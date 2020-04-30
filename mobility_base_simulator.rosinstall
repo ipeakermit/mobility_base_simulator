@@ -1,4 +1,4 @@
 - git:
     local-name: mobility_base_simulator
-    uri: https://bitbucket.org/DataspeedInc/mobility_base_simulator
+    uri: https://github.com/ipeakermit/mobility_base_simulator
     version: master
