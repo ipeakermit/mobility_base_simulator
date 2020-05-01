@@ -41,6 +41,7 @@ namespace gazebo
 MobilityBasePlugin::MobilityBasePlugin() :
     nh_(NULL), spinner_thread_(NULL), tf_broadcaster_(NULL), first_update_(true), fast_(true)
 {
+  ROS_INFO("MobilityBasePlugin: constructor; fast: %s", (fast_ ? "true" : "false"));
   omni_a_ = 1.0 / WHEEL_RADIUS;
   omni_b_ = 1.0 / WHEEL_RADIUS;
   omni_c_ = 0.5 * (WHEEL_BASE_WIDTH + WHEEL_BASE_LENGTH) / WHEEL_RADIUS;
@@ -76,18 +77,23 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   // Store the pointer to the model and world
   model_ = parent;
   world_ = model_->GetWorld();
-  ROS_INFO("Loading the kw90 mobility base plugin");
+  ROS_INFO("MobilityBasePlugin: Loading the kw90 mobility base plugin");
 
   // Get then name of the parent model
   std::string model_name = sdf->GetParent()->Get<std::string>("name");
   std::string first_level = sdf->Get<std::string>("name");
-  ROS_INFO("model_name of model: %s", model_name.c_str());
-  gzdbg << "MobilityBasePlugin loaded for model '" << model_name << "'\n";
+  ROS_INFO("MobilityBasePlugin: model_name of model: %s", model_name.c_str());
+  gzdbg << "MobilityBasePlugin: loaded for model '" << model_name << "'\n";
 
   // Get parameters
-  if (sdf->HasElement("fast")) {
-    std::string comp = "true";
-    fast_ = comp.compare(sdf->GetElement("fast")->Get<std::string>()) ? false : true;
+  //if (sdf->HasElement("fast")) {
+  //  std::string comp = "true";
+  //  fast_ = comp.compare(sdf->GetElement("fast")->Get<std::string>()) ? false : true;
+  //}
+  if (fast_) {
+    ROS_INFO("MobilityBasePlugin: fast:=true");
+  } else {
+    ROS_INFO("MobilityBasePlugin: fast:=false");
   }
   if (sdf->HasElement("parent_frame_id")) {
     parent_frame_id_ = sdf->GetElement("parent_frame_id")->Get<std::string>();
@@ -99,7 +105,7 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
     tf_broadcaster_ = new tf::TransformBroadcaster();
   }
 
-  ROS_INFO("Getting pointers to baselink and pushing wheels joint states back.");
+  ROS_INFO("MobilityBasePlugin: Getting pointers to baselink and pushing wheels joint states back.");
 
   // Get the pointer to the base_link
   link_base_footprint_ = model_->GetLink("base_footprint");
@@ -119,9 +125,9 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
       joint_state_wheels_.position.push_back(0);
       joint_state_wheels_.velocity.push_back(0);
       joint_state_wheels_.effort.push_back(0);
-      ROS_INFO("Wheel joint: %s is set up successfully", wheel.c_str());
+      ROS_INFO("MobilityBasePlugin: Wheel joint: %s is set up successfully", wheel.c_str());
     } else {
-      gzerr << "Failed to find joint '" << wheel << "' in the model\n";
+      gzerr << "MobilityBasePlugin: Failed to find joint '" << wheel << "' in the model\n";
       return;
     }
     if (!fast_) {
@@ -130,19 +136,19 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
         std::stringstream ss;
         ss << wheel << "_roller_" << j;
         std::string roller = ss.str();
-        ROS_INFO("Roller joints for %s", roller.c_str());
+        ROS_INFO("MobilityBasePlugin: Roller joints for %s", roller.c_str());
         joint_rollers_[i][j] = parent->GetJoint(roller);
         if (joint_rollers_[i][j]) {
-          ROS_INFO("Roller joint: %s found", roller.c_str());
+          ROS_INFO("MobilityBasePlugin: Roller joint: %s found", roller.c_str());
           joint_rollers_[i][j]->SetDamping(0, 0.006);
           joint_state_rollers_.name.push_back(roller);
           joint_state_rollers_.position.push_back(0);
           joint_state_rollers_.velocity.push_back(0);
           joint_state_rollers_.effort.push_back(0);
-          ROS_INFO("Roller joint: %s is set up successfully", roller.c_str());
+          ROS_INFO("MobilityBasePlugin: Roller joint: %s is set up successfully", roller.c_str());
         } else {
-          ROS_ERROR("Roller joint: %s not found in the model", roller.c_str());
-          gzerr << "Failed to find joint '" << roller << "' in the model\n";
+          ROS_ERROR("MobilityBasePlugin: Roller joint: %s not found in the model", roller.c_str());
+          gzerr << "MobilityBasePlugin: Failed to find joint '" << roller << "' in the model\n";
           return;
         }
       }
@@ -179,19 +185,19 @@ void MobilityBasePlugin::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
   pmq_joystick_ = pmq_.addPub<geometry_msgs::TwistStamped>();
   pmq_bumper_states_ = pmq_.addPub<mobility_base_core_msgs::BumperState>();
   pmq_mode_ = pmq_.addPub<mobility_base_core_msgs::Mode>();
-  ROS_INFO("Publishers set up");
+  ROS_INFO("MobilityBasePlugin: Publishers set up");
 
   // Set up Subscribers
   sub_cmd_vel_ = nh_->subscribe("cmd_vel", 1, &MobilityBasePlugin::recvCmdVel, this);
   sub_cmd_vel_raw_ = nh_->subscribe("cmd_vel_raw", 1, &MobilityBasePlugin::recvCmdVelRaw, this);
-  ROS_INFO("Subscribers set up");
+  ROS_INFO("MobilityBasePlugin: Subscribers set up");
 
   // Publish latched topics 'mode' and 'imu/is_calibrated'
   publishMode(ros::Time(0));
   std_msgs::Bool msg;
   msg.data = true;
   pmq_imu_is_calibrated_->push(msg, pub_imu_is_calibrated_);
-  ROS_INFO("IMU is calibrated latched topic published");
+  ROS_INFO("MobilityBasePlugin: IMU is calibrated latched topic published");
 
   // Listen to the update event. This event is broadcast every simulation iteration.
   spinner_thread_ = new boost::thread(boost::bind( &MobilityBasePlugin::spin, this));
@@ -445,11 +451,11 @@ void MobilityBasePlugin::recvCmdVel(const geometry_msgs::Twist::ConstPtr& msg)
 {
   boost::lock_guard<boost::mutex> lock(cmd_vel_mutex_);
   cmd_vel_stamp_ = world_->SimTime();
-  ROS_INFO("Received cmd_vel message!");
+  //ROS_INFO("Received cmd_vel message!");
   cmd_vel_.X(msg->linear.x);
   cmd_vel_.Y(msg->linear.y);
   cmd_vel_.Z(msg->angular.z);
-  ROS_INFO("cmd_vel_.X() set to %f", cmd_vel_.X());
+  //ROS_INFO("cmd_vel_.X() set to %f", cmd_vel_.X());
 }
 
 void MobilityBasePlugin::recvCmdVelRaw(const geometry_msgs::Twist::ConstPtr& msg)
